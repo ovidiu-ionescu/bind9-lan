@@ -1,0 +1,284 @@
+{
+  "$schema": "https://tree-sitter.github.io/tree-sitter/assets/schemas/grammar.schema.json",
+  "name": "orgncf",
+  "rules": {
+    "source_file": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "ip_config_line"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "extra_config_line"
+              }
+            ]
+          }
+        },
+        {
+          "type": "SYMBOL",
+          "name": "dns_prefix_section"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "dns_suffix_section"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "dhcp_prefix_section"
+        }
+      ]
+    },
+    "ip_config_line": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "_rule"
+        }
+      ]
+    },
+    "extra_config_line": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "domain"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "hostname"
+            },
+            {
+              "type": "STRING",
+              "value": "\n"
+            }
+          ]
+        },
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "dns_file_name"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "filename"
+            },
+            {
+              "type": "STRING",
+              "value": "\n"
+            }
+          ]
+        },
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "reverse_dns_file_name"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "filename"
+            },
+            {
+              "type": "STRING",
+              "value": "\n"
+            }
+          ]
+        },
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "dhcp_file_name"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "filename"
+            },
+            {
+              "type": "STRING",
+              "value": "\n"
+            }
+          ]
+        }
+      ]
+    },
+    "_rule": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "mac_address"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "SYMBOL",
+          "name": "ip_address"
+        },
+        {
+          "type": "REPEAT1",
+          "content": {
+            "type": "SYMBOL",
+            "name": "hostname"
+          }
+        },
+        {
+          "type": "STRING",
+          "value": "\n"
+        }
+      ]
+    },
+    "dns_prefix_section": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "dns_prefix"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "string"
+        }
+      ]
+    },
+    "dns_suffix_section": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "dns_suffix"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "string"
+        }
+      ]
+    },
+    "dhcp_prefix_section": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "dhcp_prefix"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "string"
+        }
+      ]
+    },
+    "mac_address": {
+      "type": "PATTERN",
+      "value": "([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})"
+    },
+    "ip_address": {
+      "type": "PATTERN",
+      "value": "(\\d{1,3}\\.){3}\\d{1,3}"
+    },
+    "hostname": {
+      "type": "PATTERN",
+      "value": "([a-zA-Z0-9.-]+)|@"
+    },
+    "comment": {
+      "type": "PATTERN",
+      "value": ";[^\\n]*"
+    },
+    "filename": {
+      "type": "PATTERN",
+      "value": "[a-zA-Z0-9._-]+"
+    },
+    "dns_prefix": {
+      "type": "PATTERN",
+      "value": "DNS_PREFIX"
+    },
+    "dns_suffix": {
+      "type": "PATTERN",
+      "value": "DNS_SUFFIX"
+    },
+    "dhcp_prefix": {
+      "type": "PATTERN",
+      "value": "DHCP_PREFIX"
+    },
+    "string": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "string_delimiter"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "string_content"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "string_delimiter"
+        }
+      ]
+    },
+    "string_content": {
+      "type": "TOKEN",
+      "content": {
+        "type": "REPEAT",
+        "content": {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "PATTERN",
+              "value": "[^\"]"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\"[^\"]"
+            },
+            {
+              "type": "PATTERN",
+              "value": "\\n"
+            }
+          ]
+        }
+      }
+    },
+    "string_delimiter": {
+      "type": "STRING",
+      "value": "\"\"\""
+    }
+  },
+  "extras": [
+    {
+      "type": "PATTERN",
+      "value": "\\s"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "comment"
+    }
+  ],
+  "conflicts": [],
+  "precedences": [],
+  "externals": [],
+  "inline": [],
+  "supertypes": [],
+  "reserved": {}
+}

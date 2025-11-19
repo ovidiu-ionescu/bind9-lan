@@ -1,0 +1,2 @@
+(string_content) @indent
+
