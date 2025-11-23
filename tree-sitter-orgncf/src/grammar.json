@@ -16,7 +16,7 @@
               },
               {
                 "type": "SYMBOL",
-                "name": "extra_config_line"
+                "name": "_extra_config_line"
               }
             ]
           }
@@ -44,78 +44,110 @@
         }
       ]
     },
-    "extra_config_line": {
+    "_extra_config_line": {
       "type": "CHOICE",
       "members": [
         {
-          "type": "SEQ",
-          "members": [
-            {
-              "type": "STRING",
-              "value": "domain"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "hostname"
-            },
-            {
-              "type": "STRING",
-              "value": "\n"
-            }
-          ]
+          "type": "SYMBOL",
+          "name": "domain"
         },
         {
-          "type": "SEQ",
-          "members": [
-            {
-              "type": "STRING",
-              "value": "dns_file_name"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "filename"
-            },
-            {
-              "type": "STRING",
-              "value": "\n"
-            }
-          ]
+          "type": "SYMBOL",
+          "name": "dns_file_name"
         },
         {
-          "type": "SEQ",
-          "members": [
-            {
-              "type": "STRING",
-              "value": "reverse_dns_file_name"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "filename"
-            },
-            {
-              "type": "STRING",
-              "value": "\n"
-            }
-          ]
+          "type": "SYMBOL",
+          "name": "reverse_dns_file_name"
         },
         {
-          "type": "SEQ",
-          "members": [
-            {
-              "type": "STRING",
-              "value": "dhcp_file_name"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "filename"
-            },
-            {
-              "type": "STRING",
-              "value": "\n"
-            }
-          ]
+          "type": "SYMBOL",
+          "name": "dhcp_file_name"
         }
       ]
+    },
+    "domain": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "domain_keyword"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "hostname"
+        },
+        {
+          "type": "STRING",
+          "value": "\n"
+        }
+      ]
+    },
+    "dns_file_name": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "dns_file_name_keyword"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "filename"
+        },
+        {
+          "type": "STRING",
+          "value": "\n"
+        }
+      ]
+    },
+    "reverse_dns_file_name": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "reverse_dns_file_name_keyword"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "filename"
+        },
+        {
+          "type": "STRING",
+          "value": "\n"
+        }
+      ]
+    },
+    "dhcp_file_name": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "dhcp_file_name_keyword"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "filename"
+        },
+        {
+          "type": "STRING",
+          "value": "\n"
+        }
+      ]
+    },
+    "domain_keyword": {
+      "type": "PATTERN",
+      "value": "domain"
+    },
+    "dns_file_name_keyword": {
+      "type": "PATTERN",
+      "value": "dns_file_name"
+    },
+    "reverse_dns_file_name_keyword": {
+      "type": "PATTERN",
+      "value": "reverse_dns_file_name"
+    },
+    "dhcp_file_name_keyword": {
+      "type": "PATTERN",
+      "value": "dhcp_file_name"
     },
     "_rule": {
       "type": "SEQ",
@@ -154,7 +186,7 @@
       "members": [
         {
           "type": "SYMBOL",
-          "name": "dns_prefix"
+          "name": "dns_prefix_keyword"
         },
         {
           "type": "SYMBOL",
@@ -167,7 +199,7 @@
       "members": [
         {
           "type": "SYMBOL",
-          "name": "dns_suffix"
+          "name": "dns_suffix_keyword"
         },
         {
           "type": "SYMBOL",
@@ -180,7 +212,7 @@
       "members": [
         {
           "type": "SYMBOL",
-          "name": "dhcp_prefix"
+          "name": "dhcp_prefix_keyword"
         },
         {
           "type": "SYMBOL",
@@ -208,15 +240,15 @@
       "type": "PATTERN",
       "value": "[a-zA-Z0-9._-]+"
     },
-    "dns_prefix": {
+    "dns_prefix_keyword": {
       "type": "PATTERN",
       "value": "DNS_PREFIX"
     },
-    "dns_suffix": {
+    "dns_suffix_keyword": {
       "type": "PATTERN",
       "value": "DNS_SUFFIX"
     },
-    "dhcp_prefix": {
+    "dhcp_prefix_keyword": {
       "type": "PATTERN",
       "value": "DHCP_PREFIX"
     },

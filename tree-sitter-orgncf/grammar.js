@@ -17,19 +17,28 @@ module.exports = grammar({
   rules: {
     source_file: ($) =>
       seq(
-        repeat(choice($.ip_config_line, $.extra_config_line)),
+        repeat(choice($.ip_config_line, $._extra_config_line)),
         $.dns_prefix_section,
         $.dns_suffix_section,
         $.dhcp_prefix_section,
       ),
     ip_config_line: ($) => choice($._rule),
-    extra_config_line: ($) =>
+    _extra_config_line: ($) =>
       choice(
-        seq("domain", $.hostname, "\n"),
-        seq("dns_file_name", $.filename, "\n"),
-        seq("reverse_dns_file_name", $.filename, "\n"),
-        seq("dhcp_file_name", $.filename, "\n"),
+        $.domain, 
+        $.dns_file_name, 
+        $.reverse_dns_file_name, 
+        $.dhcp_file_name
       ),
+    domain:                $ => seq($.domain_keyword, $.hostname, "\n"),
+    dns_file_name:         $ => seq($.dns_file_name_keyword, $.filename, "\n"),
+    reverse_dns_file_name: $ => seq($.reverse_dns_file_name_keyword, $.filename, "\n"),
+    dhcp_file_name:        $ => seq($.dhcp_file_name_keyword, $.filename, "\n"),
+    
+    domain_keyword: ($) => /domain/,
+    dns_file_name_keyword: ($) => /dns_file_name/,
+    reverse_dns_file_name_keyword: ($) => /reverse_dns_file_name/,
+    dhcp_file_name_keyword: ($) => /dhcp_file_name/,
 
     _rule: ($) =>
       seq(
@@ -39,15 +48,15 @@ module.exports = grammar({
         "\n",
       ),
     dns_prefix_section: ($) => seq(
-      $.dns_prefix,
+      $.dns_prefix_keyword,
       $.string,
     ),
     dns_suffix_section: ($) => seq(
-      $.dns_suffix,
+      $.dns_suffix_keyword,
       $.string,
     ),
     dhcp_prefix_section: ($) => seq(
-      $.dhcp_prefix,
+      $.dhcp_prefix_keyword,
       $.string,
     ),
     mac_address: ($) => /([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})/,
@@ -55,9 +64,9 @@ module.exports = grammar({
     hostname: ($) => /([a-zA-Z0-9.-]+)|@/,
     comment: ($) => /;[^\n]*/,
     filename: ($) => /[a-zA-Z0-9._-]+/,
-    dns_prefix: ($) => /DNS_PREFIX/,
-    dns_suffix: ($) => /DNS_SUFFIX/,
-    dhcp_prefix: ($) => /DHCP_PREFIX/,
+    dns_prefix_keyword: ($) => /DNS_PREFIX/,
+    dns_suffix_keyword: ($) => /DNS_SUFFIX/,
+    dhcp_prefix_keyword: ($) => /DHCP_PREFIX/,
     string: $ => seq(
       $.string_delimiter,
       $.string_content,

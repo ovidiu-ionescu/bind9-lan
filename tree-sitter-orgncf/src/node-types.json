@@ -1,5 +1,24 @@
 [
   {
+    "type": "dhcp_file_name",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "dhcp_file_name_keyword",
+          "named": true
+        },
+        {
+          "type": "filename",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "dhcp_prefix_section",
     "named": true,
     "fields": {},
@@ -8,11 +27,30 @@
       "required": true,
       "types": [
         {
-          "type": "dhcp_prefix",
+          "type": "dhcp_prefix_keyword",
           "named": true
         },
         {
           "type": "string",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "dns_file_name",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "dns_file_name_keyword",
+          "named": true
+        },
+        {
+          "type": "filename",
           "named": true
         }
       ]
@@ -27,7 +65,7 @@
       "required": true,
       "types": [
         {
-          "type": "dns_prefix",
+          "type": "dns_prefix_keyword",
           "named": true
         },
         {
@@ -46,7 +84,7 @@
       "required": true,
       "types": [
         {
-          "type": "dns_suffix",
+          "type": "dns_suffix_keyword",
           "named": true
         },
         {
@@ -57,15 +95,15 @@
     }
   },
   {
-    "type": "extra_config_line",
+    "type": "domain",
     "named": true,
     "fields": {},
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": true,
       "types": [
         {
-          "type": "filename",
+          "type": "domain_keyword",
           "named": true
         },
         {
@@ -99,6 +137,25 @@
     }
   },
   {
+    "type": "reverse_dns_file_name",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "filename",
+          "named": true
+        },
+        {
+          "type": "reverse_dns_file_name_keyword",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "source_file",
     "named": true,
     "root": true,
@@ -108,7 +165,15 @@
       "required": true,
       "types": [
         {
+          "type": "dhcp_file_name",
+          "named": true
+        },
+        {
           "type": "dhcp_prefix_section",
+          "named": true
+        },
+        {
+          "type": "dns_file_name",
           "named": true
         },
         {
@@ -120,11 +185,15 @@
           "named": true
         },
         {
-          "type": "extra_config_line",
+          "type": "domain",
           "named": true
         },
         {
           "type": "ip_config_line",
+          "named": true
+        },
+        {
+          "type": "reverse_dns_file_name",
           "named": true
         }
       ]
@@ -159,28 +228,28 @@
     "extra": true
   },
   {
-    "type": "dhcp_file_name",
-    "named": false
-  },
-  {
-    "type": "dhcp_prefix",
+    "type": "dhcp_file_name_keyword",
     "named": true
   },
   {
-    "type": "dns_file_name",
-    "named": false
-  },
-  {
-    "type": "dns_prefix",
+    "type": "dhcp_prefix_keyword",
     "named": true
   },
   {
-    "type": "dns_suffix",
+    "type": "dns_file_name_keyword",
     "named": true
   },
   {
-    "type": "domain",
-    "named": false
+    "type": "dns_prefix_keyword",
+    "named": true
+  },
+  {
+    "type": "dns_suffix_keyword",
+    "named": true
+  },
+  {
+    "type": "domain_keyword",
+    "named": true
   },
   {
     "type": "filename",
@@ -199,8 +268,8 @@
     "named": true
   },
   {
-    "type": "reverse_dns_file_name",
-    "named": false
+    "type": "reverse_dns_file_name_keyword",
+    "named": true
   },
   {
     "type": "string_content",
