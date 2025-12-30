@@ -96,9 +96,8 @@ fn get_url_list(filename: &PathBuf) -> Result<HashSet<String>, Box<dyn std::erro
       None => return,
     }
     .trim();
-    if !cleaned.is_empty()
-      && !urls.insert(cleaned.to_string()) {
-        eprintln!("「{}」 is a duplicate", cleaned);
+    if !cleaned.is_empty() && !urls.insert(cleaned.to_string()) {
+      eprintln!("「{}」 is a duplicate", cleaned);
     }
   });
   if urls.is_empty() { Err("No urls found in file".into()) } else { Ok(urls) }
