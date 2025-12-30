@@ -1,0 +1,5 @@
+set shell := ["bash", "-cu"]
+
+run:
+  time cargo run -- --files list_of_lists.txt
+

@@ -5,6 +5,9 @@ use std::path::PathBuf;
 use clap::{Parser, ValueHint};
 use futures::future::join_all;
 use reqwest::Client;
+use reqwest_middleware::ClientBuilder;
+use reqwest_retry::RetryTransientMiddleware;
+use reqwest_retry::policies::ExponentialBackoff;
 use tokio::fs::File;
 use tokio::io::AsyncWriteExt;
 
@@ -32,7 +35,8 @@ async fn main() -> Result<(), BoxError> {
       Ok::<HashSet<String>, BoxError>(acc)
     })?;
 
-  let client = Client::new();
+  let retry_policy = ExponentialBackoff::builder().build_with_max_retries(3);
+  let client = ClientBuilder::new(Client::new()).with(RetryTransientMiddleware::new_with_policy(retry_policy)).build();
 
   // 1. Create a list of futures (one for each request)
   // We clone the client (it's backed by an Arc, so it's cheap)
