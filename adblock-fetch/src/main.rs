@@ -57,9 +57,13 @@ async fn main() -> Result<(), BoxError> {
     match result {
       Ok(fetch_result) => match fetch_result.text {
         Ok(content) => {
-          let sep_line = "#".repeat(80);
-          file.write_all(format!("{}\n### {}\n{}\n", sep_line, fetch_result.url, sep_line).as_bytes()).await?;
-          file.write_all(content.as_bytes()).await?;
+          if has_valid_content(&content) {
+            let sep_line = "#".repeat(80);
+            file.write_all(format!("{}\n### {}\n{}\n", sep_line, fetch_result.url, sep_line).as_bytes()).await?;
+            file.write_all(content.as_bytes()).await?;
+          } else {
+            eprintln!("Url 「{}」 returned no valid content", fetch_result.url);
+          }
         }
         Err(e) => eprintln!("Error fetching a url 「{}」: {}", fetch_result.url, e),
       },
@@ -81,4 +85,25 @@ fn get_url_list(filename: &PathBuf) -> Result<HashSet<String>, Box<dyn std::erro
     })
     .collect();
   if urls.is_empty() { Err("No urls found in file".into()) } else { Ok(urls) }
+}
+
+/// check if the list content contains any valid lines
+/// this would indicate an invalid list
+fn has_valid_content(content: &str) -> bool {
+  content
+    .lines()
+    .filter_map(|line| {
+      let cleaned = line.split('#').next()?.trim();
+      if cleaned.is_empty() { None } else { Some(cleaned.to_string()) }
+    })
+    .any(|line| {
+      match line.split(' ').next_back() {
+        Some(host) => match addr::parse_dns_name(host) {
+          Ok(_) => Some(host),
+          Err(_) => None,
+        },
+        _ => None,
+      }
+      .is_some()
+    })
 }
