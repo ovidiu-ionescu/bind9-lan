@@ -31,7 +31,15 @@ async fn main() -> Result<(), BoxError> {
   let urls: HashSet<String> =
     args.files.iter().map(|filename| get_url_list(filename)).try_fold(HashSet::new(), |mut acc, set| {
       let set = set?;
-      acc.extend(set);
+      if acc.is_empty() {
+        acc = set;
+      } else {
+        for s in set {
+          if !acc.insert(s.clone()) {
+            eprintln!("「{}」is a duplicate", s);
+          }
+        }
+      }
       Ok::<HashSet<String>, BoxError>(acc)
     })?;
 
@@ -81,13 +89,18 @@ async fn main() -> Result<(), BoxError> {
 
 fn get_url_list(filename: &PathBuf) -> Result<HashSet<String>, Box<dyn std::error::Error>> {
   let content = read_to_string(filename)?;
-  let urls: HashSet<String> = content
-    .lines()
-    .filter_map(|line| {
-      let cleaned = line.split('#').next()?.trim();
-      if cleaned.is_empty() { None } else { Some(cleaned.to_string()) }
-    })
-    .collect();
+  let mut urls = HashSet::<String>::new();
+  content.lines().for_each(|line| {
+    let cleaned = match line.split('#').next() {
+      Some(it) => it,
+      None => return,
+    }
+    .trim();
+    if !cleaned.is_empty()
+      && !urls.insert(cleaned.to_string()) {
+        eprintln!("「{}」 is a duplicate", cleaned);
+    }
+  });
   if urls.is_empty() { Err("No urls found in file".into()) } else { Ok(urls) }
 }
 
