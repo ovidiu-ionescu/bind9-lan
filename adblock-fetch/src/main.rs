@@ -1,5 +1,5 @@
 use std::collections::HashSet;
-use std::fs::read_to_string;
+use std::fs::{metadata, read_to_string};
 use std::path::PathBuf;
 
 use clap::{Parser, ValueHint};
@@ -20,8 +20,8 @@ struct FetchResult {
 
 #[derive(Parser, Debug)]
 struct Args {
-  #[arg(short, long, required = true, value_hint = ValueHint::FilePath)]
-  files: Vec<PathBuf>,
+  #[arg(short, long, required = true, num_args = 1.., value_delimiter = ' ', value_hint = ValueHint::FilePath, value_parser = validate_readable_file)]
+  lists_files: Vec<PathBuf>,
 }
 
 #[tokio::main]
@@ -29,7 +29,7 @@ async fn main() -> Result<(), BoxError> {
   let args = Args::parse();
 
   let urls: HashSet<String> =
-    args.files.iter().map(|filename| get_url_list(filename)).try_fold(HashSet::new(), |mut acc, set| {
+    args.lists_files.iter().map(|filename| get_url_list(filename)).try_fold(HashSet::new(), |mut acc, set| {
       let set = set?;
       if acc.is_empty() {
         acc = set;
@@ -62,7 +62,8 @@ async fn main() -> Result<(), BoxError> {
   let results: Vec<Result<FetchResult, BoxError>> = join_all(tasks).await;
 
   // 3. Prepare the output file
-  let mut file = File::create("concatenated_results.txt").await?;
+  let output_name = "concatenated.list";
+  let mut file = File::create(output_name).await?;
 
   // 4. Filter for successful results and concatenate
   for result in results {
@@ -83,7 +84,7 @@ async fn main() -> Result<(), BoxError> {
     }
   }
 
-  println!("Finished! Results saved to concatenated_results.txt");
+  println!("Finished! Results saved to {}", output_name);
   Ok(())
 }
 
@@ -122,4 +123,22 @@ fn has_valid_content(content: &str) -> bool {
       }
       .is_some()
     })
+}
+
+fn validate_readable_file(s: &str) -> Result<PathBuf, String> {
+    let path = PathBuf::from(s);
+    
+    // Check if path exists and is a file
+    let meta = metadata(&path).map_err(|_| format!("'{}' does not exist", s))?;
+    
+    if !meta.is_file() {
+        return Err(format!("'{}' is not a file", s));
+    }
+
+    // Check if readable by attempting to open (optional but thorough)
+    if std::fs::File::open(&path).is_err() {
+        return Err(format!("'{}' is not readable (permission denied)", s));
+    }
+
+    Ok(path)
 }
