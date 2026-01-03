@@ -1,0 +1,5 @@
+/target
+Cargo.lock
+
+db.0.0.10
+dnsquery.log
