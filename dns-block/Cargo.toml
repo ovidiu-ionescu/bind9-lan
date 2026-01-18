@@ -1,0 +1,25 @@
+[package]
+name = "dns-block"
+version = "0.6.0"
+authors = ["Ovidiu Ionescu <ovidiu@ionescu.net>"]
+edition = "2024"
+description = "Simplify the list of ad and tracking servers to block"
+
+[dependencies]
+fnv = "*"
+rayon = "*"
+clap= { version = "*", features = ["derive"] }
+indoc="1.0"
+mimalloc = "*"
+addr = "0"
+futures = "0"
+reqwest = "0.12.28"
+reqwest-middleware = "0.4.2"
+reqwest-retry = "0.8.0"
+tokio = { version = "1", features = ["full"] }
+log = "0.4.29"
+env_logger = "0.11.8"
+
+[profile.release]
+lto = true
+
