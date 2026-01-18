@@ -1,0 +1,282 @@
+[
+  {
+    "type": "dhcp_file_name",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "dhcp_file_name_keyword",
+          "named": true
+        },
+        {
+          "type": "filename",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "dhcp_prefix_section",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "dhcp_prefix_keyword",
+          "named": true
+        },
+        {
+          "type": "string",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "dns_file_name",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "dns_file_name_keyword",
+          "named": true
+        },
+        {
+          "type": "filename",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "dns_prefix_section",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "dns_prefix_keyword",
+          "named": true
+        },
+        {
+          "type": "string",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "dns_suffix_section",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "dns_suffix_keyword",
+          "named": true
+        },
+        {
+          "type": "string",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "domain",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "domain_keyword",
+          "named": true
+        },
+        {
+          "type": "hostname",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "ip_config_line",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "hostname",
+          "named": true
+        },
+        {
+          "type": "ip_address",
+          "named": true
+        },
+        {
+          "type": "mac_address",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "reverse_dns_file_name",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "filename",
+          "named": true
+        },
+        {
+          "type": "reverse_dns_file_name_keyword",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "source_file",
+    "named": true,
+    "root": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "dhcp_file_name",
+          "named": true
+        },
+        {
+          "type": "dhcp_prefix_section",
+          "named": true
+        },
+        {
+          "type": "dns_file_name",
+          "named": true
+        },
+        {
+          "type": "dns_prefix_section",
+          "named": true
+        },
+        {
+          "type": "dns_suffix_section",
+          "named": true
+        },
+        {
+          "type": "domain",
+          "named": true
+        },
+        {
+          "type": "ip_config_line",
+          "named": true
+        },
+        {
+          "type": "reverse_dns_file_name",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "string",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "string_content",
+          "named": true
+        },
+        {
+          "type": "string_delimiter",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "\n",
+    "named": false
+  },
+  {
+    "type": "comment",
+    "named": true,
+    "extra": true
+  },
+  {
+    "type": "dhcp_file_name_keyword",
+    "named": true
+  },
+  {
+    "type": "dhcp_prefix_keyword",
+    "named": true
+  },
+  {
+    "type": "dns_file_name_keyword",
+    "named": true
+  },
+  {
+    "type": "dns_prefix_keyword",
+    "named": true
+  },
+  {
+    "type": "dns_suffix_keyword",
+    "named": true
+  },
+  {
+    "type": "domain_keyword",
+    "named": true
+  },
+  {
+    "type": "filename",
+    "named": true
+  },
+  {
+    "type": "hostname",
+    "named": true
+  },
+  {
+    "type": "ip_address",
+    "named": true
+  },
+  {
+    "type": "mac_address",
+    "named": true
+  },
+  {
+    "type": "reverse_dns_file_name_keyword",
+    "named": true
+  },
+  {
+    "type": "string_content",
+    "named": true
+  },
+  {
+    "type": "string_delimiter",
+    "named": true
+  }
+]
