@@ -1,0 +1,21 @@
+# Configuration for rustfmt
+# Documentation for options: https://rust-lang.github.io/rustfmt
+
+#edition = "2021"
+# align members in structs
+struct_field_align_threshold = 20
+
+# when initializing structs, don't specify the name if the variable name is same as field
+use_field_init_shorthand = true
+#skip_macro_invocations = ["indoc", "formatdoc"]
+
+fn_params_layout = "Compressed"
+
+group_imports = "StdExternalCrate"
+imports_granularity = "Module"
+match_block_trailing_comma = true
+
+# Use 2 spaces for indentation
+tab_spaces = 2
+hard_tabs = false
+
