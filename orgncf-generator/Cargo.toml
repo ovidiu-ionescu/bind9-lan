@@ -7,7 +7,7 @@ edition = "2024"
 clap = { workspace = true }
 thiserror = { workspace = true }
 tree-sitter = { workspace = true }
-tree-sitter-orgncf = { git = "https://github.com/ovidiu-ionescu/tree-sitter-orgncf", branch = "master" }
+tree-sitter-orgncf = { path = "../tree-sitter-orgncf" }
 
 [dev-dependencies]
-indoc = "2.0.7"
+indoc = { workspace = true }

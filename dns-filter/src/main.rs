@@ -17,15 +17,14 @@ fn main() -> io::Result<()> {
         let parts: Vec<&str> = line.split_whitespace().collect();
         
         // Typical PTR format: [octet] IN PTR [hostname]
-        if let Some(ptr_idx) = parts.iter().position(|&r| r == "PTR") {
-            if ptr_idx > 0 && parts.len() > ptr_idx + 1 {
+        if let Some(ptr_idx) = parts.iter().position(|&r| r == "PTR")
+            && ptr_idx > 0 && parts.len() > ptr_idx + 1 {
                 let last_octet = parts[0];
                 let hostname = parts[ptr_idx + 1].trim_end_matches('.');
                 let full_ip = format!("{}.{}", subnet_prefix, last_octet);
                 
                 ip_map.insert(full_ip, hostname.to_string());
             }
-        }
     }
 
     // 3. Setup Stream Processing

@@ -10,6 +10,7 @@ resolver = "2"
 
 [workspace.dependencies]
 addr = "0.15.6"
+cc = "1.2"
 clap = { version = "4.5.53", features = ["derive"] }
 env_logger = "0.11.8"
 fnv = "*"
@@ -26,13 +27,6 @@ thiserror = "2.0.17"
 tokio = { version = "1.48.0", features = ["full"] }
 tree-sitter = "0.25.10"
 tree-sitter-language = "0.1"
-
-[workspace.build-dependencies]
-cc = "1.2"
-
-[workspace.dev-dependencies]
-indoc = "2.0.7"
-tree-sitter = "0.25.10"
 
 [profile.release]
 lto = true
