@@ -1,4 +1,4 @@
-install-nvim: build
+install-dev: build
   install -D libtree-sitter-orgncf.so ~/.local/share/nvim/site/parser/orgncf.so
   mkdir -p ~/.local/share/nvim/site/queries/orgncf
   cp -r queries/* ~/.local/share/nvim/site/queries/orgncf/
@@ -7,4 +7,11 @@ install-nvim: build
 build:
   tree-sitter generate
   make
+
+install-nvim:
+  make
+  install -D libtree-sitter-orgncf.so ~/.local/share/nvim/site/parser/orgncf.so
+  install -D queries/highlights.scm ~/.local/share/nvim/site/queries/orgncf/highlights.scm
+  #mkdir -p ~/.config/nvim/ftplugin && echo 'vim.treesitter.start()' > ~/.config/nvim/ftplugin/orgncf.lua
+  #mkdir -p ~/.config/nvim/ftdetect && echo 'vim.filetype.add({ extension = { ncf = "orgncf", }, })' > ~/.config/nvim/ftdetect/orgncf.lua
 
