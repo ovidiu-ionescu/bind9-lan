@@ -44,13 +44,13 @@ pub fn parser(content: &str) -> Result<ParsedInfo<'_>, Box<dyn std::error::Error
 
   let val = |node: tree_sitter::Node| &content[node.byte_range()];
 
-  let val_child = |node: tree_sitter::Node, child_idx: usize| {
+  let val_child = |node: tree_sitter::Node, child_idx: u32| {
     &content[node
       .child(child_idx)
       .expect("child should exist")
       .byte_range()]
   };
-  let val_grandchild = |node: tree_sitter::Node, child_idx: usize, grandchild_idx: usize| {
+  let val_grandchild = |node: tree_sitter::Node, child_idx: u32, grandchild_idx: u32| {
     &content[node
       .child(child_idx)
       .expect("child should exist")
