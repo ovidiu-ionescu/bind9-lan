@@ -1,0 +1,5 @@
+bind9-lan (0.1.0) UNRELEASED; urgency=medium
+
+  * Initial release.
+
+ -- Ovidiu Ionescu <ovidiu@ionescu.net>  Mon, 19 Jan 2026 22:34:32 +0100

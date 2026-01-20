@@ -1,0 +1,23 @@
+#!/usr/bin/make -f
+
+#export CARGO_HOME=$(CURDIR)/debian/cargo-home
+export RUSTFLAGS=-C debuginfo=0
+DESTDIR ?= $(CURDIR)/debian/bind9-lan
+CARGO = $${HOME}/.cargo/bin/cargo
+
+%:
+	dh $@
+
+override_dh_auto_build:
+	$(CARGO) build --release --workspace
+
+override_dh_auto_install:
+	install -d $(DESTDIR)/usr/bin
+	install -m755 target/release/dns-block $(DESTDIR)/usr/bin
+	install -m755 target/release/adblock-fetch $(DESTDIR)/usr/bin
+	install -m755 target/release/dns-filter $(DESTDIR)/usr/bin
+	install -m755 target/release/orgncf-generator $(DESTDIR)/usr/bin
+
+override_dh_auto_clean:
+	$(CARGO) clean
+

@@ -30,3 +30,5 @@ tree-sitter-language = "0.1"
 
 [profile.release]
 lto = true
+strip = true
+

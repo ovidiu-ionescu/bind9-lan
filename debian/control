@@ -1,0 +1,19 @@
+Source: bind9-lan
+Section: utils
+Priority: optional
+Maintainer: Ovidiu Ionescu <ovidiu@ionescu.net>
+Build-Depends:
+  debhelper-compat (= 13),
+Standards-Version: 4.6.2
+Rules-Requires-Root: no
+
+Package: bind9-lan
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Utils for Local Area Network DNS server based on BIND9
+ Includes: 
+ - dns-block
+ - dns-filter
+ - orgncf-generator
+ - adblock-fetch
+
