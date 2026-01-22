@@ -11,8 +11,11 @@ install-dependencies:
 clean:
   #cd debian && rm -rf debhelper-build-stamp bind9-lan.substvars bind9-lan files .debhelper
   debclean
+  rm -rf debian/man
 
 clean-deb:
-  rm ../bind9-lan_0.1.0_amd64.buildinfo ../bind9-lan_0.1.0_amd64.changes ../bind9-lan_0.1.0.dsc ../bind9-lan_0.1.0.tar.xz ../bind9-lan_0.1.0_amd64.build
+  rm ../bind9-lan_*_amd64.buildinfo ../bind9-lan_*_amd64.changes ../bind9-lan_*.dsc ../bind9-lan_*.tar.xz ../bind9-lan_*_amd64.build
 
+check-man-page:
+  dpkg-deb -c ../bind9-lan_0.1.1_amd64.deb | grep man
 

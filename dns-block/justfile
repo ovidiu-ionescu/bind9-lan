@@ -1,0 +1,4 @@
+man:
+  pandoc dns-block.md -s -t man -o dns-block.1
+  man ./dns-block.1
+

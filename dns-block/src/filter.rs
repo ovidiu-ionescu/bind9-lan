@@ -1,18 +1,19 @@
 use crate::sub_domains::sub_domain_iterator;
 use fnv::FnvHashSet as HashSet;
+use fnv::FnvHashMap as HashMap;
 use log::*;
 use std::io::{self, Write};
 
-fn is_domain_blocked_by_index(domain: &str, index: &HashSet<&str>) -> bool {
+fn is_domain_blocked_by_index(domain: &str, index: &HashMap<&str, bool>) -> bool {
   for seg in sub_domain_iterator(domain, 1) {
-    if index.contains(seg) {
+    if index.contains_key(seg) {
       return true;
     }
   }
   false
 }
 
-fn is_domain_blocked(domain: &str, blacklist_com: &HashSet<&str>, blacklist_net: &HashSet<&str>) -> bool {
+fn is_domain_blocked(domain: &str, blacklist_com: &HashMap<&str, bool>, blacklist_net: &HashMap<&str, bool>) -> bool {
   if domain.ends_with("com") {
     is_domain_blocked_by_index(domain, blacklist_com)
   } else {
@@ -31,7 +32,7 @@ fn extract<'a>(line: &'a str, pref: &str, suf: &str) -> Option<&'a str> {
   None
 }
 
-pub fn filter(blacklist_com: &HashSet<&str>, blacklist_net: &HashSet<&str>, filter_parameter: Option<&str>) -> io::Result<()> {
+pub fn filter(blacklist_com: &HashMap<&str, bool>, blacklist_net: &HashMap<&str, bool>, filter_parameter: Option<&str>) -> io::Result<()> {
   debug!("Filter for client ips: {:#?}", filter_parameter);
   let mut input = String::new();
 

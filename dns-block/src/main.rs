@@ -1,6 +1,7 @@
 use env_logger::Builder;
 //use std::collections::HashSet;
 use fnv::FnvHashSet as HashSet;
+use fnv::FnvHashMap as HashMap;
 
 use std::fs::{self, read_to_string};
 use std::io::{BufWriter, Write};
@@ -172,10 +173,10 @@ fn process_whitelist_line<'a>(line: &'a str, index: &mut HashSet<&'a str>) {
   }
 }
 
-/// adds a domain to the blocked index if it's not already blocked already or whitelisted
+/// adds a domain to the blocked index if it's not already blocked or whitelisted
 fn process_bad_domain<'a>(
   domain: &'a str,
-  index: &mut HashSet<&'a str>,
+  index: &mut HashMap<&'a str, bool>,
   whitelist: &HashSet<&'a str>,
   statistics: &mut Statistics,
   whitelisted: &mut HashSet<&'a str>,
@@ -183,19 +184,32 @@ fn process_bad_domain<'a>(
   if domain.is_empty() {
     return;
   }
+  // check if a parent domain is already blocked
   for seg in sub_domain_iterator(domain, 1) {
-    if index.contains(seg) {
+    // get the parent and mark it as false 
+    if let Some(is_distinct) = index.get_mut(seg) {
+      if *is_distinct {
+        // mark as not distinct anymore
+        *is_distinct = false;
+      }
       statistics.increment_parent();
+
+      return;
+    }
+    if index.contains_key(seg) {
+      statistics.increment_parent();
+
       return;
     }
   }
   if !whitelist.contains(domain) {
-    if index.insert(domain) {
+    if index.insert(domain, true).is_none() {
       statistics.increment_blocked();
     } else {
       statistics.increment_duplicate();
     }
   } else {
+    // if this domain has not been encountered before we count it as distinct
     if whitelisted.insert(domain) {
       statistics.increment_distinct_whitelisted();
     }
@@ -204,21 +218,21 @@ fn process_bad_domain<'a>(
   }
 }
 
-fn write_output(index_com: &HashSet<&str>, index_net: &HashSet<&str>, output_file: &str) {
+fn write_output(index_com: &HashMap<&str, bool>, index_net: &HashMap<&str, bool>, output_file: &str) {
   let mut f = BufWriter::with_capacity(8 * 1024, fs::File::create(output_file).unwrap());
   let eol: [u8; 1] = [10];
-  for d in index_com.iter() {
+  for d in index_com.keys() {
     f.write_all(d.as_bytes()).unwrap();
     f.write_all(&eol).unwrap();
   }
-  for d in index_net.iter() {
+  for d in index_net.keys() {
     f.write_all(d.as_bytes()).unwrap();
     f.write_all(&eol).unwrap();
   }
   f.flush().unwrap();
 }
 
-fn write_bind_output(index_com: &HashSet<&str>, index_net: &HashSet<&str>, output_file: &str) {
+fn write_bind_output(index_com: &HashMap<&str, bool>, index_net: &HashMap<&str, bool>, output_file: &str) {
   let preamble = indoc! {"
         $TTL 60
         @   IN    SOA  localhost. root.localhost.  (
@@ -236,16 +250,19 @@ fn write_bind_output(index_com: &HashSet<&str>, index_net: &HashSet<&str>, outpu
   f.write_all(preamble.as_bytes()).unwrap();
 
   let eol: [u8; 1] = [10];
-  let mut serialize_index = |index: &HashSet<&str>| {
+  let mut serialize_index = |index: &HashMap<&str, bool>| {
     for d in index.iter() {
-      f.write_all(d.as_bytes()).unwrap();
+      let key = *d.0;
+      f.write_all(key.as_bytes()).unwrap();
       f.write_all(suffix.as_bytes()).unwrap();
       f.write_all(&eol).unwrap();
 
-      f.write_all(prefix.as_bytes()).unwrap();
-      f.write_all(d.as_bytes()).unwrap();
-      f.write_all(suffix.as_bytes()).unwrap();
-      f.write_all(&eol).unwrap();
+      if !*d.1 {
+        f.write_all(prefix.as_bytes()).unwrap();
+        f.write_all(key.as_bytes()).unwrap();
+        f.write_all(suffix.as_bytes()).unwrap();
+        f.write_all(&eol).unwrap();
+      }
     }
   };
   serialize_index(index_com);
@@ -276,8 +293,8 @@ fn process_baddies<'a>(
   bad_domains: &'a [Domain],
   whitelist: &HashSet<&'a str>,
   filter_d: fn(&str) -> bool,
-) -> (HashSet<&'a str>, Statistics) {
-  let mut blacklist: HashSet<&str> = HashSet::with_capacity_and_hasher(bad_domains.len() / 2, Default::default());
+) -> (HashMap<&'a str, bool>, Statistics) {
+  let mut blacklist: HashMap<&str, bool> = HashMap::with_capacity_and_hasher(bad_domains.len() / 2, Default::default());
   let mut whitelisted: HashSet<&str> = HashSet::with_capacity_and_hasher(whitelist.len(), Default::default());
   let mut statistics = Statistics::new();
 

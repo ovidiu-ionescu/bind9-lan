@@ -4,7 +4,10 @@ use std::fmt;
 pub struct Statistics {
   parent: usize,
   duplicate: usize,
+  // how many entries matched against the whitelist
+  // because of duplicates, this will always be more than distinct whitelisted
   whitelisted: usize,
+  // counts how many distinct whitelisted domains were found
   distinct_whitelisted: usize,
   blocked: usize,
 }

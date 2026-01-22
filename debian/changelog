@@ -1,3 +1,10 @@
+bind9-lan (0.1.1) UNRELEASED; urgency=medium
+
+  * dns-block generates a more efficient rpz.db file by only using * when necessary.
+  * added a man file for dns-block.
+
+ -- Ovidiu Ionescu <ovidiu@p1g2.ionescu.net>  Thu, 22 Jan 2026 23:01:21 +0100
+
 bind9-lan (0.1.0) UNRELEASED; urgency=medium
 
   * Initial release.
