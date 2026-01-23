@@ -2,7 +2,7 @@ use chrono::Local;
 use clap::CommandFactory; // Required to access command() method
 use clap_mangen::Man;
 use dns_block_lib::cli::Args; // Import the cli struct
-use roff::{Roff, bold, line_break, roman};
+use roff::{Roff, roman};
 use std::fs::File;
 use std::io::Write;
 use std::path::PathBuf;
