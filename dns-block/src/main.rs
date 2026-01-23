@@ -1,7 +1,7 @@
 use env_logger::Builder;
 //use std::collections::HashSet;
-use fnv::FnvHashSet as HashSet;
 use fnv::FnvHashMap as HashMap;
+use fnv::FnvHashSet as HashSet;
 
 use std::fs::{self, read_to_string};
 use std::io::{BufWriter, Write};
@@ -186,7 +186,7 @@ fn process_bad_domain<'a>(
   }
   // check if a parent domain is already blocked
   for seg in sub_domain_iterator(domain, 1) {
-    // get the parent and mark it as false 
+    // get the parent and mark it as false
     if let Some(is_distinct) = index.get_mut(seg) {
       if *is_distinct {
         // mark as not distinct anymore

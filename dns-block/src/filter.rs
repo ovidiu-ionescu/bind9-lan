@@ -1,6 +1,6 @@
 use crate::sub_domains::sub_domain_iterator;
-use fnv::FnvHashSet as HashSet;
 use fnv::FnvHashMap as HashMap;
+use fnv::FnvHashSet as HashSet;
 use log::*;
 use std::io::{self, Write};
 
@@ -32,7 +32,11 @@ fn extract<'a>(line: &'a str, pref: &str, suf: &str) -> Option<&'a str> {
   None
 }
 
-pub fn filter(blacklist_com: &HashMap<&str, bool>, blacklist_net: &HashMap<&str, bool>, filter_parameter: Option<&str>) -> io::Result<()> {
+pub fn filter(
+  blacklist_com: &HashMap<&str, bool>,
+  blacklist_net: &HashMap<&str, bool>,
+  filter_parameter: Option<&str>,
+) -> io::Result<()> {
   debug!("Filter for client ips: {:#?}", filter_parameter);
   let mut input = String::new();
 

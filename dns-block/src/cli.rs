@@ -3,7 +3,7 @@ use std::{fs::metadata, path::PathBuf};
 use clap::{Parser, Subcommand, ValueHint};
 
 #[derive(Parser, Debug)]
-#[command(name = "dns-block", author, version, about, long_about)]
+#[command(name = "dns-block", author, version, about, long_about, before_help = "bind9-lan")]
 pub struct Args {
   /// log level, dddd for trace, ddd for debug, dd for info, d for warn, default no output
   #[arg(short, long, action = clap::ArgAction::Count)]
@@ -20,6 +20,7 @@ pub struct Args {
   #[arg(short, long, num_args = 1.., value_delimiter = ' ', value_hint = ValueHint::FilePath, value_parser = validate_readable_file)]
   pub block_file: Option<Vec<PathBuf>>,
 
+  /// File containing a list of domains to allow (whitelist)
   #[arg(short, long, value_hint = ValueHint::FilePath, value_parser = validate_readable_file)]
   pub allow_file: Option<PathBuf>,
 
