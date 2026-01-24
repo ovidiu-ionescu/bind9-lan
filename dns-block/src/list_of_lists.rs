@@ -3,7 +3,7 @@ use std::fs::read_to_string;
 use std::path::PathBuf;
 
 use futures::future::join_all;
-use log::{info, warn};
+use log::{debug, info, warn};
 use reqwest::Client;
 use reqwest_middleware::ClientBuilder;
 use reqwest_retry::RetryTransientMiddleware;
@@ -51,8 +51,15 @@ pub async fn fetch_lists(lists_file: Option<Vec<PathBuf>>) -> Result<Vec<FetchRe
   let tasks = urls.into_iter().map(|url| {
     let client = client.clone();
     async move {
-      let res = client.get(&url).send().await?;
+      let res = match client.get(&url).send().await {
+        Ok(response) => response,
+        Err(e) => {
+          warn!("Failed to fetch a list URL 「{}」: {}", &url, e);
+          return Err(Box::new(e) as BoxError);
+        }
+      };
       let text = res.text().await;
+      debug!("Fetched URL: {}", &url);
       Ok(FetchResult { url, text })
     }
   });
