@@ -32,6 +32,6 @@ name = "dns-block"
 path = "src/main.rs"
 
 [[bin]]
-name = "man-gen"
+name = "dns-block-man-gen"
 path = "src/bin/man_gen.rs"
 
