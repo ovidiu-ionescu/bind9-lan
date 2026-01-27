@@ -3,7 +3,7 @@ use std::fs::metadata;
 use std::path::PathBuf;
 
 #[derive(Parser, Debug)]
-#[command(name = "adblock-fetch", author, version, about, long_about, before_help = "bind9-lan")]
+#[command(author, version, about, long_about)]
 pub struct Args {
   /// log level, dddd for trace, ddd for debug, dd for info, d for warn, default no output
   #[arg(short, long, action = clap::ArgAction::Count)]
