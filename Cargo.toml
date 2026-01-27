@@ -4,6 +4,7 @@ members = [
     "dns-block",
     "dns-filter",
     "orgncf-generator",
+    "shared",
     "tree-sitter-orgncf",
 ]
 resolver = "2"
@@ -20,6 +21,7 @@ futures = "0.3.31"
 indoc="2.0.7"
 log = "0.4.29"
 mimalloc = "*"
+num-format = "0.4.4"
 rayon = "*"
 regex = "1.12.2"
 reqwest = "0.13.1"

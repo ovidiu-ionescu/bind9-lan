@@ -1,5 +1,5 @@
 man: 
-  cargo run --bin man-gen
+  cargo run --bin dns-block-man-gen
   man ./dns-block.1
 
 man-manual:

@@ -1,13 +1,28 @@
 [package]
 name = "adblock-fetch"
-version = "0.1.0"
+version = "0.1.1"
+authors = ["Ovidiu Ionescu <ovidiu@ionescu.net>"]
 edition = "2024"
+description = "Resolve lists of list of hosts"
 
 [dependencies]
-addr = { workspace = true }
+chrono = { workspace = true }
+clap_mangen = { workspace = true }
 clap = { workspace = true }
-futures = { workspace = true }
-reqwest = { workspace = true }
-reqwest-middleware = { workspace = true }
-reqwest-retry = { workspace = true }
+log = { workspace = true }
+roff = { workspace = true }
 tokio = { workspace = true }
+shared = { path = "../shared" }
+
+[lib]
+name = "adblock_fetch_lib"
+path = "src/lib.rs"
+
+[[bin]]
+name = "adblock-fetch"
+path = "src/main.rs"
+
+[[bin]]
+name = "adblock-fetch-man-gen"
+path = "src/bin/man_gen.rs"
+

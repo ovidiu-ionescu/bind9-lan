@@ -3,7 +3,8 @@ use std::fs::read_to_string;
 use std::path::PathBuf;
 
 use futures::future::join_all;
-use log::{debug, info, warn};
+use log::{error, info, warn};
+use num_format::{Locale, ToFormattedString};
 use reqwest::Client;
 use reqwest_middleware::ClientBuilder;
 use reqwest_retry::RetryTransientMiddleware;
@@ -16,7 +17,8 @@ pub struct FetchResult {
   pub text: reqwest::Result<String>,
 }
 
-pub async fn fetch_lists(lists_file: Option<Vec<PathBuf>>) -> Result<Vec<FetchResult>, BoxError> {
+/// Resolves a list of list urls by downloading them all
+pub async fn fetch_lists(lists_file: Option<Vec<PathBuf>>, max_retries: u32) -> Result<Vec<FetchResult>, BoxError> {
   let lists_files = match lists_file {
     Some(l) => {
       if l.is_empty() {
@@ -36,14 +38,14 @@ pub async fn fetch_lists(lists_file: Option<Vec<PathBuf>>) -> Result<Vec<FetchRe
       } else {
         for s in set {
           if !acc.insert(s.clone()) {
-            warn!("「{}」is a duplicate", s);
+            warn!("「{}」is a duplicate, skipping it", s);
           }
         }
       }
       Ok::<HashSet<String>, BoxError>(acc)
     })?;
 
-  let retry_policy = ExponentialBackoff::builder().build_with_max_retries(10);
+  let retry_policy = ExponentialBackoff::builder().build_with_max_retries(max_retries);
   let client = ClientBuilder::new(Client::new()).with(RetryTransientMiddleware::new_with_policy(retry_policy)).build();
 
   // 1. Create a list of futures (one for each request)
@@ -54,12 +56,12 @@ pub async fn fetch_lists(lists_file: Option<Vec<PathBuf>>) -> Result<Vec<FetchRe
       let res = match client.get(&url).send().await {
         Ok(response) => response,
         Err(e) => {
-          warn!("Failed to fetch a list URL 「{}」: {}", &url, e);
+          error!("✗ Could not download 「{}」, error: 「{}」", &url, e);
           return Err(Box::new(e) as BoxError);
         }
       };
       let text = res.text().await;
-      debug!("Fetched URL: {}", &url);
+      info!("✓ downloaded「{url}」");
       Ok(FetchResult { url, text })
     }
   });
@@ -70,22 +72,28 @@ pub async fn fetch_lists(lists_file: Option<Vec<PathBuf>>) -> Result<Vec<FetchRe
 
   let mut ret = Vec::with_capacity(results.len());
   // 4. Filter for successful results and concatenate
-  for result in results {
-    match result {
-      Ok(fetch_result) => match fetch_result.text {
-        Ok(ref content) => {
-          if has_valid_content(content) {
-            ret.push(fetch_result);
-          } else {
-            warn!("Url 「{}」 returned no valid content", fetch_result.url);
-          }
+  info!("Validate downloads");
+  let mut total_hosts = 0;
+  for fetch_result in results.into_iter().flatten() {
+    match fetch_result.text {
+      Ok(ref content) => {
+        let number_of_valid_lines = number_of_valid_lines(content);
+        if number_of_valid_lines > 0 {
+          total_hosts += number_of_valid_lines;
+          info!("{:>12} valid hosts in 「{}」", number_of_valid_lines.to_formatted_string(&Locale::en_NL), fetch_result.url);
+          ret.push(fetch_result);
+        } else {
+          warn!("Url 「{}」 returned no valid content", fetch_result.url);
         }
-        Err(e) => warn!("Error fetching a url 「{}」: {}", fetch_result.url, e),
-      },
-      Err(e) => warn!("Error fetching a URL: {}", e),
+      }
+      Err(e) => warn!("Error fetching a url 「{}」: {}", fetch_result.url, e),
     }
   }
 
+  info!(
+    "Finished downloading. We got {} hosts in total but they most likely contain duplicates.",
+    total_hosts.to_formatted_string(&Locale::en_NL)
+  );
   Ok(ret)
 }
 
@@ -105,17 +113,16 @@ fn get_url_list(filename: &PathBuf) -> Result<HashSet<String>, Box<dyn std::erro
   if urls.is_empty() { Err("No urls found in file".into()) } else { Ok(urls) }
 }
 
-/// check if the list content contains any valid lines
-/// this would indicate an invalid list
-/// TODO replace to use Domain
-fn has_valid_content(content: &str) -> bool {
+/// return the number of valid lines
+/// zero would indicate an invalid list
+fn number_of_valid_lines(content: &str) -> usize {
   content
     .lines()
     .filter_map(|line| {
       let cleaned = line.split('#').next()?.trim();
       if cleaned.is_empty() { None } else { Some(cleaned.to_string()) }
     })
-    .any(|line| {
+    .filter(|line| {
       match line.split(' ').next_back() {
         Some(host) => match addr::parse_dns_name(host) {
           Ok(_) => Some(host),
@@ -125,4 +132,5 @@ fn has_valid_content(content: &str) -> bool {
       }
       .is_some()
     })
+    .count()
 }

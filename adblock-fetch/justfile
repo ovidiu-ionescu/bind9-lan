@@ -1,5 +1,9 @@
 set shell := ["bash", "-cu"]
 
 run:
-  time cargo run -- -l list_of_lists.txt own_list_of_lists.txt
+  time cargo run --release --bin adblock-fetch -- -dd -m 0 -l ../Data/list_of_lists.txt ../Data/own_list_of_lists.txt
+
+man:
+  cargo run --bin adblock-fetch-man-gen
+  man ./adblock-fetch.1
 

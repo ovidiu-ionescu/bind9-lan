@@ -26,6 +26,10 @@ pub struct Args {
 
   #[command(subcommand)]
   pub command: Commands,
+
+  /// How many times to retry if downloading a list fails
+  #[arg(short, long, default_value_t = 10)]
+  pub max_retries: u32,
 }
 
 #[derive(Subcommand, Debug, Clone)]

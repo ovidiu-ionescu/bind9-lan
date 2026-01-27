@@ -1,6 +1,6 @@
 [package]
 name = "dns-block"
-version = "0.7.1"
+version = "0.7.2"
 authors = ["Ovidiu Ionescu <ovidiu@ionescu.net>"]
 edition = "2024"
 description = "Simplify the list of ad and tracking servers to block"
@@ -12,16 +12,12 @@ clap= { workspace = true }
 indoc= { workspace = true }
 mimalloc = { workspace = true }
 addr = { workspace = true }
-futures = { workspace = true }
-reqwest = { workspace = true }
-reqwest-middleware = { workspace = true }
-reqwest-retry = { workspace = true }
 tokio = { workspace = true }
 log = { workspace = true }
-env_logger = { workspace = true }
 clap_mangen = { workspace = true }
 roff = { workspace = true }
 chrono = { workspace = true }
+shared = { path = "../shared" }
 
 [lib]
 name = "dns_block_lib"

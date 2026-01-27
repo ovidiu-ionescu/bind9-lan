@@ -1,4 +1,3 @@
-use env_logger::Builder;
 //use std::collections::HashSet;
 use fnv::FnvHashMap as HashMap;
 use fnv::FnvHashSet as HashSet;
@@ -11,7 +10,6 @@ use std::thread;
 
 mod cli;
 mod dns_resolver;
-mod list_of_lists;
 mod sub_domains;
 use sub_domains::{Domain, count_char_occurences, sub_domain_iterator};
 mod filter;
@@ -28,25 +26,24 @@ use log::*;
 use mimalloc::MiMalloc;
 
 use crate::cli::{Commands, get_args};
-use crate::list_of_lists::fetch_lists;
 
 #[global_allocator]
 static GLOBAL: MiMalloc = MiMalloc;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-  let command_line_params = get_args();
+  let args = get_args();
 
-  setup_logging(command_line_params.debug);
+  shared::setup_logging(args.debug);
 
-  trace!("{:#?}", command_line_params);
+  trace!("{:#?}", args);
 
   let start = Instant::now();
 
   debug!("resolve the remote lists");
-  let remote_lists = fetch_lists(command_line_params.lists_file).await?;
+  let remote_lists = shared::fetch_lists(args.lists_file, args.max_retries).await?;
 
-  let whitelist_string = match command_line_params.allow_file {
+  let whitelist_string = match args.allow_file {
     Some(path) => fs::read_to_string(path).unwrap(),
     _ => String::with_capacity(0),
   };
@@ -65,7 +62,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
   // read the block files from disk
   // also calculate number of lines
   let mut total_line_count = 0;
-  let block_lists = match command_line_params.block_file {
+  let block_lists = match args.block_file {
     Some(block_files) => block_files
       .iter()
       .map(|path| {
@@ -136,7 +133,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
   info!("Statistics .net \n{}", &statistics_net);
   info!("Statistics total \n{}", Statistics::aggregate(&statistics_com, &statistics_net));
 
-  match command_line_params.command {
+  match args.command {
     Commands::Pipe { filter } => {
       filter::filter(&blacklist_com, &blacklist_net, filter.as_deref()).unwrap();
     }
@@ -148,7 +145,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         write_output(&blacklist_com, &blacklist_net, &output_file);
       }
 
-      if command_line_params.timing {
+      if args.timing {
         info!(
           "sorting: {}, sorting core: {}, until after sort: {}, processing baddies: {}",
           end_sorting - start_sorting,
@@ -302,20 +299,4 @@ fn process_baddies<'a>(
     process_bad_domain(domain.name, &mut blacklist, whitelist, &mut statistics, &mut whitelisted);
   }
   (blacklist, statistics)
-}
-
-fn setup_logging(level: u8) {
-  let level_filter = match level {
-    0 => LevelFilter::Error,
-    1 => LevelFilter::Warn,
-    2 => LevelFilter::Info,
-    3 => LevelFilter::Debug,
-    _ => LevelFilter::Trace,
-  };
-  let mut builder = Builder::from_default_env();
-  // if the RUST_LOG var is not defined we use the debug level
-  if std::env::var("RUST_LOG").is_err() {
-    builder.filter_level(level_filter);
-  }
-  builder.format_timestamp_secs().init();
 }
