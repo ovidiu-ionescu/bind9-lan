@@ -12,4 +12,8 @@ reqwest = { workspace = true }
 reqwest-middleware = { workspace = true }
 reqwest-retry = { workspace = true }
 num-format = { workspace = true }
+chrono = { workspace = true }
+clap = { workspace = true }
+clap_mangen = { workspace = true }
+roff = { workspace = true }
 

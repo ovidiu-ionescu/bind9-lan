@@ -6,11 +6,8 @@ edition = "2024"
 description = "Resolve lists of list of hosts"
 
 [dependencies]
-chrono = { workspace = true }
-clap_mangen = { workspace = true }
 clap = { workspace = true }
 log = { workspace = true }
-roff = { workspace = true }
 tokio = { workspace = true }
 shared = { path = "../shared" }
 

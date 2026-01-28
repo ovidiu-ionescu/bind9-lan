@@ -7,10 +7,8 @@ description = "Resolves ip addresses for clients in the bind9 query log"
 
 [dependencies]
 regex = { workspace = true }
-chrono = { workspace = true }
-clap_mangen = { workspace = true }
 clap = { workspace = true }
-roff = { workspace = true }
+shared = { path = "../shared" }
 
 [lib]
 name = "dns_filter_lib"
