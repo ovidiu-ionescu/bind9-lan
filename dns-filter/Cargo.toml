@@ -1,7 +1,26 @@
 [package]
 name = "dns-filter"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
+authors = ["Ovidiu Ionescu <ovidiu@ionescu.net>"]
+description = "Resolves ip addresses for clients in the bind9 query log"
 
 [dependencies]
 regex = { workspace = true }
+chrono = { workspace = true }
+clap_mangen = { workspace = true }
+clap = { workspace = true }
+roff = { workspace = true }
+
+[lib]
+name = "dns_filter_lib"
+path = "src/lib.rs"
+
+[[bin]]
+name = "dns-filter"
+path = "src/main.rs"
+
+[[bin]]
+name = "dns-filter-man-gen"
+path = "src/bin/man_gen.rs"
+

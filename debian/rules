@@ -12,6 +12,8 @@ override_dh_auto_build:
 	$(CARGO) build --release --workspace
 	mkdir -p debian/man
 	target/release/dns-block-man-gen debian/man
+	target/release/dns-filter-man-gen debian/man
+	target/release/adblock-fetch-man-gen debian/man
 
 override_dh_auto_install:
 	install -d $(DESTDIR)/usr/bin

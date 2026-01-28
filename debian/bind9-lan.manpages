@@ -1,2 +1,4 @@
 debian/man/dns-block.1
+debian/man/dns-filter.1
+debian/man/adblock-fetch.1
 

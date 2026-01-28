@@ -1,0 +1,35 @@
+.ie \n(.g .ds Aq \(aq
+.el .ds Aq '
+.TH dns-filter 1 "January 2026" bind9-lan "User Manual"
+.SH NAME
+dns\-filter \- Resolves ip addresses for clients in the bind9 query log
+.SH SYNOPSIS
+\fBdns\-filter\fR [\fB\-d\fR|\fB\-\-debug\fR]... [\fB\-s\fR|\fB\-\-subnet\-prefix\fR] [\fB\-m\fR|\fB\-\-mapping\-file\-dir\fR] [\fB\-h\fR|\fB\-\-help\fR] [\fB\-V\fR|\fB\-\-version\fR] 
+.SH DESCRIPTION
+Resolves ip addresses for clients in the bind9 query log
+.SH OPTIONS
+.TP
+\fB\-d\fR, \fB\-\-debug\fR
+log level, dddd for trace, ddd for debug, dd for info, d for warn, default no output
+.TP
+\fB\-s\fR, \fB\-\-subnet\-prefix\fR \fI<SUBNET_PREFIX>\fR [default: 10.0.0]
+
+.TP
+\fB\-m\fR, \fB\-\-mapping\-file\-dir\fR \fI<MAPPING_FILE_DIR>\fR [default: concatenated.list]
+Directory containing the mapping file. File itself will be db.<subnet_prefix reversed>
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Print help
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+Print version
+.SH VERSION
+v0.1.1
+.SH AUTHORS
+Ovidiu Ionescu <ovidiu@ionescu.net>
+.ie \n(.g .ds Aq \(aq
+.el .ds Aq '
+.SH EXAMPLES
+.TP 2
+.B "Substitute the client ip addresse using /etc/bind9/zones/db.0.0.10"
+cat dnsquery.log | dns\-filter /etc/bind9/zones

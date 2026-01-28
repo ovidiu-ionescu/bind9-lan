@@ -17,5 +17,5 @@ clean-deb:
   rm ../bind9-lan_*_amd64.buildinfo ../bind9-lan_*_amd64.changes ../bind9-lan_*.dsc ../bind9-lan_*.tar.xz ../bind9-lan_*_amd64.build
 
 check-man-page:
-  dpkg-deb -c ../bind9-lan_0.1.1_amd64.deb | grep man
+  dpkg-deb -c ../bind9-lan_0.1.*_amd64.deb | grep man
 

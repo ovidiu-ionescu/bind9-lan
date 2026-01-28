@@ -1,3 +1,10 @@
+bind9-lan (0.1.3) UNRELEASED; urgency=medium
+
+  * added man pages for all dns-filter and adblock-fetch
+  * improved logging
+
+ -- Ovidiu Ionescu <ovidiu@p1g2.ionescu.net>  Thu, 28 Jan 2026 00:55:00 +0100
+
 bind9-lan (0.1.2) UNRELEASED; urgency=medium
 
   * dns-block logs any list it fails to fetch.

@@ -1,0 +1,7 @@
+set shell := ["bash", "-cu"]
+PREF := "dns-filter"
+
+man:
+  cargo run --bin {{PREF}}-man-gen
+  man ./{{PREF}}.1
+
