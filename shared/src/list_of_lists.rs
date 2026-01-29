@@ -6,9 +6,11 @@ use futures::future::join_all;
 use log::{error, info, warn};
 use num_format::{Locale, ToFormattedString};
 use reqwest::Client;
-use reqwest_middleware::ClientBuilder;
+use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
 use reqwest_retry::RetryTransientMiddleware;
 use reqwest_retry::policies::ExponentialBackoff;
+
+use std::sync::OnceLock;
 
 type BoxError = Box<dyn std::error::Error>;
 
@@ -17,8 +19,22 @@ pub struct FetchResult {
   pub text: reqwest::Result<String>,
 }
 
+static CLIENT: OnceLock<ClientWithMiddleware> = OnceLock::new();
+
+fn get_client() -> ClientWithMiddleware {
+  let client = CLIENT.get().expect("Client not initialized");
+  // We clone the client (it's backed by an Arc, so it's cheap)
+  client.clone()
+}
+
 /// Resolves a list of list urls by downloading them all
 pub async fn fetch_lists(lists_file: Option<Vec<PathBuf>>, max_retries: u32) -> Result<Vec<FetchResult>, BoxError> {
+  let retry_policy = ExponentialBackoff::builder().build_with_max_retries(max_retries);
+  let client = ClientBuilder::new(Client::new()).with(RetryTransientMiddleware::new_with_policy(retry_policy)).build();
+  if CLIENT.set(client).is_err() {
+    warn!("Client already initialized");
+  }
+
   let lists_files = match lists_file {
     Some(l) => {
       if l.is_empty() {
@@ -30,41 +46,23 @@ pub async fn fetch_lists(lists_file: Option<Vec<PathBuf>>, max_retries: u32) -> 
     None => return Ok(Vec::new()),
   };
 
-  let urls: HashSet<String> =
-    lists_files.iter().map(|filename| get_url_list(filename)).try_fold(HashSet::new(), |mut acc, set| {
-      let set = set?;
-      if acc.is_empty() {
-        acc = set;
-      } else {
-        for s in set {
-          if !acc.insert(s.clone()) {
-            warn!("「{}」is a duplicate, skipping it", s);
-          }
-        }
-      }
-      Ok::<HashSet<String>, BoxError>(acc)
-    })?;
+  let file_results = join_all(lists_files.iter().map(get_url_list)).await;
+  let mut urls = HashSet::new();
 
-  let retry_policy = ExponentialBackoff::builder().build_with_max_retries(max_retries);
-  let client = ClientBuilder::new(Client::new()).with(RetryTransientMiddleware::new_with_policy(retry_policy)).build();
+  for result in file_results {
+    // 1. Handle the Result (stop if there's an error)
+    let inner_set = result?;
+
+    for url in inner_set {
+      // 2. Try to insert. If it returns false, it was a duplicate.
+      if !urls.insert(url.clone()) {
+        warn!("「{}」is a duplicate, skipping it", url);
+      }
+    }
+  }
 
   // 1. Create a list of futures (one for each request)
-  // We clone the client (it's backed by an Arc, so it's cheap)
-  let tasks = urls.into_iter().map(|url| {
-    let client = client.clone();
-    async move {
-      let res = match client.get(&url).send().await {
-        Ok(response) => response,
-        Err(e) => {
-          error!("✗ Could not download 「{}」, error: 「{}」", &url, e);
-          return Err(Box::new(e) as BoxError);
-        }
-      };
-      let text = res.text().await;
-      info!("✓ downloaded「{url}」");
-      Ok(FetchResult { url, text })
-    }
-  });
+  let tasks = urls.into_iter().map(|url| async move { download_url(&url).await });
 
   // 2. Execute all tasks in parallel
   info!("Fetching URLs...");
@@ -97,8 +95,47 @@ pub async fn fetch_lists(lists_file: Option<Vec<PathBuf>>, max_retries: u32) -> 
   Ok(ret)
 }
 
-fn get_url_list(filename: &PathBuf) -> Result<HashSet<String>, Box<dyn std::error::Error>> {
-  let content = read_to_string(filename)?;
+fn extract_dns_block_url(content: &str) -> Option<&str> {
+  let first_line = content.lines().next()?.trim();
+  println!("first line: {first_line}");
+  let prefix = "#!dns-block ";
+  if content.starts_with(prefix) { first_line[prefix.len()..].split_whitespace().next() } else { None }
+}
+
+#[cfg(test)]
+mod test1 {
+  #[test]
+  fn extract_dns_block_url() {
+    let content = "#!dns-block https://v.firebog.net/hosts/lists.php?type=nocross";
+    assert_eq!(Some("https://v.firebog.net/hosts/lists.php?type=nocross"), super::extract_dns_block_url(content));
+  }
+}
+
+async fn download_url(url: &str) -> Result<FetchResult, BoxError> {
+  let res = match get_client().get(url).send().await {
+    Ok(response) => response,
+    Err(e) => {
+      error!("✗ Could not download 「{}」, error: 「{}」", &url, e);
+      return Err(Box::new(e) as BoxError);
+    }
+  };
+  let text = res.text().await;
+  info!("✓ downloaded「{url}」");
+  Ok(FetchResult { url: url.to_string(), text })
+}
+
+async fn get_url_list(filename: &PathBuf) -> Result<HashSet<String>, BoxError> {
+  let mut content = read_to_string(filename)?;
+
+  // if the file has a link url at the start, we try to download a fresh instance
+  if let Some(url) = extract_dns_block_url(&content) {
+    info!("File 「{}」 has a refresh url in the first line, try to download that", filename.display());
+    if let Ok(r) = download_url(url).await
+      && let Ok(res) = r.text
+    {
+      content = res;
+    }
+  }
   let mut urls = HashSet::<String>::new();
   content.lines().for_each(|line| {
     let cleaned = match line.split('#').next() {
