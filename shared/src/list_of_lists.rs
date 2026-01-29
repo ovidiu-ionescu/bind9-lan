@@ -10,8 +10,6 @@ use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
 use reqwest_retry::RetryTransientMiddleware;
 use reqwest_retry::policies::ExponentialBackoff;
 
-use std::sync::OnceLock;
-
 type BoxError = Box<dyn std::error::Error>;
 
 pub struct FetchResult {
@@ -19,21 +17,10 @@ pub struct FetchResult {
   pub text: reqwest::Result<String>,
 }
 
-static CLIENT: OnceLock<ClientWithMiddleware> = OnceLock::new();
-
-fn get_client() -> ClientWithMiddleware {
-  let client = CLIENT.get().expect("Client not initialized");
-  // We clone the client (it's backed by an Arc, so it's cheap)
-  client.clone()
-}
-
 /// Resolves a list of list urls by downloading them all
 pub async fn fetch_lists(lists_file: Option<Vec<PathBuf>>, max_retries: u32) -> Result<Vec<FetchResult>, BoxError> {
   let retry_policy = ExponentialBackoff::builder().build_with_max_retries(max_retries);
   let client = ClientBuilder::new(Client::new()).with(RetryTransientMiddleware::new_with_policy(retry_policy)).build();
-  if CLIENT.set(client).is_err() {
-    warn!("Client already initialized");
-  }
 
   let lists_files = match lists_file {
     Some(l) => {
@@ -46,7 +33,7 @@ pub async fn fetch_lists(lists_file: Option<Vec<PathBuf>>, max_retries: u32) -> 
     None => return Ok(Vec::new()),
   };
 
-  let file_results = join_all(lists_files.iter().map(get_url_list)).await;
+  let file_results = join_all(lists_files.iter().map(|filename| get_url_list(filename, client.clone()))).await;
   let mut urls = HashSet::new();
 
   for result in file_results {
@@ -62,7 +49,7 @@ pub async fn fetch_lists(lists_file: Option<Vec<PathBuf>>, max_retries: u32) -> 
   }
 
   // 1. Create a list of futures (one for each request)
-  let tasks = urls.into_iter().map(download_url);
+  let tasks = urls.into_iter().map(|url| download_url(url, client.clone()));
 
   // 2. Execute all tasks in parallel
   info!("Fetching URLs...");
@@ -111,8 +98,8 @@ mod test1 {
   }
 }
 
-async fn download_url(url: String) -> Result<FetchResult, BoxError> {
-  let res = match get_client().get(&url).send().await {
+async fn download_url(url: String, client: ClientWithMiddleware) -> Result<FetchResult, BoxError> {
+  let res = match client.get(&url).send().await {
     Ok(response) => response,
     Err(e) => {
       error!("✗ Could not download 「{}」, error: 「{}」", &url, e);
@@ -124,13 +111,13 @@ async fn download_url(url: String) -> Result<FetchResult, BoxError> {
   Ok(FetchResult { url, text })
 }
 
-async fn get_url_list(filename: &PathBuf) -> Result<HashSet<String>, BoxError> {
+async fn get_url_list(filename: &PathBuf, client: ClientWithMiddleware) -> Result<HashSet<String>, BoxError> {
   let mut content = read_to_string(filename)?;
 
   // if the file has a link url at the start, we try to download a fresh instance
   if let Some(url) = extract_dns_block_url(&content) {
     info!("File 「{}」 has a refresh url in the first line, try to download that", filename.display());
-    if let Ok(r) = download_url(url.to_string()).await
+    if let Ok(r) = download_url(url.to_string(), client).await
       && let Ok(res) = r.text
     {
       content = res;
