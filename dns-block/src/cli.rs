@@ -1,6 +1,7 @@
 use std::{fs::metadata, path::PathBuf};
 
 use clap::{Parser, Subcommand, ValueHint};
+use log::trace;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about)]
@@ -52,7 +53,9 @@ pub enum Commands {
 }
 
 pub fn get_args() -> Args {
-  Args::parse()
+  let args = Args::parse();
+  trace!("{:#?}", args);
+  args
 }
 
 fn validate_readable_file(s: &str) -> Result<PathBuf, String> {

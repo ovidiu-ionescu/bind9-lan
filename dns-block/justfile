@@ -6,3 +6,6 @@ man-manual:
   pandoc dns-block.md -s -t man -o dns-block.1
   man ./dns-block.1
 
+etc:
+  DNS_BLOCK_CONFIG_DIR=../Data cargo run --bin dns-block -- -dd --max-retries 0 pack --bind rpz.db
+

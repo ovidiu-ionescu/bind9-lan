@@ -1,0 +1,135 @@
+# Three domains are needed for Google ads
+#www.googleadservices.com # google ads
+#clickserve.dartsearch.net # google ads
+#ad.doubleclick.net # google ads
+
+#www.bax-shop.nl # microphone shop
+static.bax-shop.nl
+www.thomann.de
+phonearena.com
+
+googleadapis.l.google.com # for fonts, blocked in hosts_blocked
+fonts.gstatic.com # for fonts
+
+# split.io
+status.split.io
+auth.split.io
+sdk-secure.split.io
+signatures.split.io
+pritunl.split.io
+www3.split.io
+www-pantheon.split.io
+sales.split.io
+api.split.io
+events.split.io
+sdk.split.io
+try.split.io
+go.split.io
+downloads.split.io
+cdn.split.io
+app.split.io
+streaming.split.io
+www.split.io
+on.split.io
+
+ct.sendgrid.net
+sentry.io
+
+# Google Analytics
+ssl-google-analytics.l.google.com
+www-google-analytics.l.google.com
+analytics.google.com
+analytics-api-samples.googlecode.com
+googleanalytics.com
+# analytics-google.info # doesn't look 100% legit
+www.google-analytics.com
+www.googletagmanager.com
+marketingplatform.google.com
+csi.gstatic.com
+
+
+# Philips respironics
+#d1lqe9temigv1p.cloudfront.net
+#d1v9u0bgi1uimx.cloudfront.net
+#philips.112.2o7.net
+
+www.spotify.com
+www.linkedin.com
+
+# Apple
+mzstatic.com
+apps.mzstatic.com
+
+# Microsoft
+teams.events.data.microsoft.com
+browser.pipe.aria.microsoft.com
+# Windows uses this to test if internet is working
+www.msftconnecttest.com
+# not sure why it was blocked
+www.msn.com
+# Events
+event.on24.com
+info.microsoft.com
+
+# IHPC lectures
+cdnapisec.kaltura.com
+# Draw.io
+js.pusher.com
+csrc.nist.gov
+# Wacom pen tablet driver
+cdn.wacom.com
+# Android Studio
+maven.fabric.io
+# schemas.android.com - Domain no longer exists in DNS
+dl.google.com
+# Docker mailhog releases page
+sessions.bugsnag.com
+
+folder.sligro.nl
+
+# Various: blogs, etc
+blog.logrocket.com
+b-ok.xyz
+livebook.manning.com
+
+# main sites
+www.ibm.com
+s2.pluralsight.com
+
+supportcentre.natwest.com
+
+# KPN
+forum.kpn.com
+zakelijkforum.kpn.com
+
+# Ahold, ah
+alv75078.live.dynatrace.com
+www.dynatrace.com
+nieuwsbrief.ah.nl
+
+# Infineon
+go.cypress.com
+sso.infineon.com
+
+# Ariston
+ariston-prd.eba-kggihhup.eu-west-1.elasticbeanstalk.com
+
+# Amazon
+www.amazonbusiness.eu
+
+spectrum.ieee.org
+
+# Ahold uses this for customer interviews
+moderated1.userzoom.com
+s.userzoom.com
+study.userzoom.com
+assets-cnd.userzoom.com
+static-cdn.userzoom.com
+api.study1.userzoom.com
+
+# motherboards
+gigabyte.com
+
+# Televizor
+lgtvonline.lge.com
+

@@ -1,0 +1,5 @@
+https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
+# from here: https://github.com/hagezi/dns-blocklists?tab=readme-ov-file#ultimate
+https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/domains/ultimate.txt
+
+

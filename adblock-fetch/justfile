@@ -1,7 +1,7 @@
 set shell := ["bash", "-cu"]
 
 run:
-  time cargo run --release --bin adblock-fetch -- -dd -m 0 -l ../Data/own_list_of_lists.txt ../Data/firebog_list_of_lists.txt
+  time cargo run --release --bin adblock-fetch -- -dd -m 0 -l ../Data/lists_of_lists.d/list_of_lists.txt ../Data/lists_of_lists.d/firebog_list_of_lists.txt
 
 man:
   cargo run --bin adblock-fetch-man-gen

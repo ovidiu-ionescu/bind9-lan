@@ -19,16 +19,20 @@ impl<'a> Domain<'a> {
     }
     .trim();
     if let Some(name) = comment_stripped.split_whitespace().next_back() {
-      match parse_dns_name(name) {
-        Ok(_) => {}
-        Err(_) => {
-          warn!("Invalid domain name: {}", name);
-          return None;
+      let name = name.trim_matches(|c: char| !c.is_ascii_alphanumeric());
+      if !name.is_empty() {
+        match parse_dns_name(name) {
+          Ok(_) => {}
+          Err(_) => {
+            warn!("Invalid domain name: 「{}」", name);
+            warn!("Original line: 「{line}」");
+            return None;
+          }
         }
-      }
-      let dots = count_char_occurences(name, '.');
-      if dots > 0 {
-        return Some(Domain { name, dots });
+        let dots = count_char_occurences(name, '.');
+        if dots > 0 {
+          return Some(Domain { name, dots });
+        }
       }
     }
     None

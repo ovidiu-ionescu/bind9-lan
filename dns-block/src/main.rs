@@ -15,6 +15,7 @@ use sub_domains::{Domain, count_char_occurences, sub_domain_iterator};
 mod filter;
 mod statistics;
 use statistics::Statistics;
+mod file_config;
 
 use std::time::Instant;
 
@@ -26,6 +27,9 @@ use log::*;
 use mimalloc::MiMalloc;
 
 use crate::cli::{Commands, get_args};
+use crate::file_config::get_allow_file;
+use crate::file_config::get_block_files;
+use crate::file_config::get_lists_files;
 
 #[global_allocator]
 static GLOBAL: MiMalloc = MiMalloc;
@@ -34,16 +38,22 @@ static GLOBAL: MiMalloc = MiMalloc;
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
   let args = get_args();
 
-  shared::setup_logging(args.debug);
+  // if no parameters were specified, try to get the settings from the config dir
+  let (lists_files, block_files, allow_file) =
+    if args.lists_file.is_none() && args.block_file.is_none() && args.allow_file.is_none() {
+      (get_lists_files(), get_block_files(), get_allow_file())
+    } else {
+      (args.lists_file, args.block_file, args.allow_file)
+    };
 
-  trace!("{:#?}", args);
+  shared::setup_logging(args.debug);
 
   let start = Instant::now();
 
   debug!("resolve the remote lists");
-  let remote_lists = shared::fetch_lists(args.lists_file, args.max_retries).await?;
+  let remote_lists = shared::fetch_lists(lists_files, args.max_retries).await?;
 
-  let whitelist_string = match args.allow_file {
+  let whitelist_string = match allow_file {
     Some(path) => fs::read_to_string(path).unwrap(),
     _ => String::with_capacity(0),
   };
@@ -62,7 +72,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
   // read the block files from disk
   // also calculate number of lines
   let mut total_line_count = 0;
-  let block_lists = match args.block_file {
+  let block_lists = match block_files {
     Some(block_files) => block_files
       .iter()
       .map(|path| {
