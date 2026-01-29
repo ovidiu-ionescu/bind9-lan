@@ -84,7 +84,6 @@ pub async fn fetch_lists(lists_file: Option<Vec<PathBuf>>, max_retries: u32) -> 
 
 fn extract_dns_block_url(content: &str) -> Option<&str> {
   let first_line = content.lines().next()?.trim();
-  println!("first line: {first_line}");
   let prefix = "#!dns-block ";
   if content.starts_with(prefix) { first_line[prefix.len()..].split_whitespace().next() } else { None }
 }
