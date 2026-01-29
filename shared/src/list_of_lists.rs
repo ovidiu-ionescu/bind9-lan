@@ -62,7 +62,7 @@ pub async fn fetch_lists(lists_file: Option<Vec<PathBuf>>, max_retries: u32) -> 
   }
 
   // 1. Create a list of futures (one for each request)
-  let tasks = urls.into_iter().map(|url| async move { download_url(&url).await });
+  let tasks = urls.into_iter().map(download_url);
 
   // 2. Execute all tasks in parallel
   info!("Fetching URLs...");
@@ -111,8 +111,8 @@ mod test1 {
   }
 }
 
-async fn download_url(url: &str) -> Result<FetchResult, BoxError> {
-  let res = match get_client().get(url).send().await {
+async fn download_url(url: String) -> Result<FetchResult, BoxError> {
+  let res = match get_client().get(&url).send().await {
     Ok(response) => response,
     Err(e) => {
       error!("✗ Could not download 「{}」, error: 「{}」", &url, e);
@@ -121,7 +121,7 @@ async fn download_url(url: &str) -> Result<FetchResult, BoxError> {
   };
   let text = res.text().await;
   info!("✓ downloaded「{url}」");
-  Ok(FetchResult { url: url.to_string(), text })
+  Ok(FetchResult { url, text })
 }
 
 async fn get_url_list(filename: &PathBuf) -> Result<HashSet<String>, BoxError> {
@@ -130,7 +130,7 @@ async fn get_url_list(filename: &PathBuf) -> Result<HashSet<String>, BoxError> {
   // if the file has a link url at the start, we try to download a fresh instance
   if let Some(url) = extract_dns_block_url(&content) {
     info!("File 「{}」 has a refresh url in the first line, try to download that", filename.display());
-    if let Ok(r) = download_url(url).await
+    if let Ok(r) = download_url(url.to_string()).await
       && let Ok(res) = r.text
     {
       content = res;
