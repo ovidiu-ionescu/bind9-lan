@@ -7,7 +7,7 @@ fn main() -> std::io::Result<()> {
   let cmd = Args::command();
   let examples = vec![ManExample {
     title: "Create the rpz.db file from multiple block lists and an allow list:",
-    example: "dns-block -dd -lists-file list_of_lists.txt own_list_of_lists.txt -block-file hosts_blocked.txt -allow-file domains.whitelisted pack -bind rpz.db",
+    example: "dns-block -dd -lists-file list_of_lists.txt own_list_of_lists.txt -block-file hosts_blocked.txt -allow-file domains.whitelisted pack --bind rpz.db",
   }];
   generate_man_page(cmd, examples)?;
 
