@@ -22,7 +22,7 @@ pub fn get_args() -> Args {
 }
 
 fn validate_ipv4_prefix(s: &str) -> Result<String, String> {
-  let parts: Vec<&str> = s.split(',').collect();
+  let parts: Vec<&str> = s.split('.').collect();
   let error = Err(format!("「{s}」 should be three numbers separated by dots in the range 0-255"));
   if parts.len() != 3 {
     return error;
@@ -44,4 +44,14 @@ fn validate_ipv4_prefix(s: &str) -> Result<String, String> {
     }
   }
   Ok(s.to_string())
+}
+
+#[cfg(test)]
+mod tests {
+  use super::validate_ipv4_prefix;
+
+  #[test]
+  fn test_validate_ipv4_prefix() {
+    validate_ipv4_prefix("10.0.0").unwrap();
+  }
 }
